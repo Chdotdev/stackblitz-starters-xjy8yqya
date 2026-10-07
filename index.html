@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DashFlow - Dashboard & Hub de Produtividade Moderno</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f5ff',
+                            100: '#e0ebff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 3s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Glassmorphism utility */
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .dark .glass {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #a855f7;
+            border-radius: 9999px;
+        }
+        .dark ::webkit-scrollbar-thumb {
+            background: #4f46e5;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 transition-colors duration-300 min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
+
+    <!-- Header / Navbar -->
+    <header class="sticky top-0 z-50 glass border-b border-slate-200/80 dark:border-slate-800/80 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 sm:h-20">
+                <!-- Logo -->
+                <div class="flex items-center gap-3 cursor-pointer" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
+                        <i class="fa-solid fa-bolt text-lg"></i>
+                    </div>
+                    <span class="text-xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 bg-clip-text text-transparent">
+                        DashFlow
+                    </span>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <nav class="hidden md:flex items-center gap-8 font-medium text-sm text-slate-600 dark:text-slate-300">
+                    <a href="#hero" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Início</a>
+                    <a href="#tasks" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Tarefas</a>
+                    <a href="#widgets" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Ferramentas</a>
+                    <a href="#contact" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Contato</a>
+                </nav>
+
+                <!-- Action Controls -->
+                <div class="flex items-center gap-3">
+                    <!-- Theme Switcher Button -->
+                    <button id="themeToggleBtn" aria-label="Alternar Tema" class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all">
+                        <i id="themeIcon" class="fa-solid fa-moon text-lg"></i>
+                    </button>
+
+                    <!-- CTA Button -->
+                    <a href="#tasks" class="hidden sm:inline-flex items-center justify-center px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 shadow-md shadow-indigo-500/20 active:scale-95 transition-all">
+                        <i class="fa-solid fa-rocket mr-2"></i> Abrir Painel
+                    </a>
+
+                    <!-- Mobile Menu Toggle -->
+                    <button id="mobileMenuBtn" aria-label="Abrir Menu" class="md:hidden p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="mobileMenu" class="hidden md:hidden border-b border-slate-200 dark:border-slate-800 bg-slate-50/95 dark:bg-slate-900/95 backdrop-blur-lg px-4 pt-2 pb-6 space-y-3">
+            <a href="#hero" class="mobile-nav-link block px-3 py-2 rounded-lg font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Início</a>
+            <a href="#tasks" class="mobile-nav-link block px-3 py-2 rounded-lg font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Tarefas</a>
+            <a href="#widgets" class="mobile-nav-link block px-3 py-2 rounded-lg font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Ferramentas</a>
+            <a href="#contact" class="mobile-nav-link block px-3 py-2 rounded-lg font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Contato</a>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow">
+        
+        <!-- Hero Section -->
+        <section id="hero" class="relative overflow-hidden py-16 lg:py-24">
+            <!-- Background Decorative Lights -->
+            <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-tr from-indigo-500/20 to-pink-500/20 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="grid lg:grid-cols-12 gap-12 items-center">
+                    
+                    <!-- Left Hero Intro -->
+                    <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+                        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/50">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                            Versão 2.0 • Dashboard de Produtividade Integrado
+                        </div>
+
+                        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
+                            Gerencie seus projetos com <span class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">simplicidade e foco</span>.
+                        </h1>
+
+                        <p class="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto lg:mx-0">
+                            Uma plataforma interativa completa para organizar tarefas cotidianas, otimizar seu tempo com técnica Pomodoro e acessar utilitários práticos em um único lugar.
+                        </p>
+
+                        <!-- CTA Action Buttons -->
+                        <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
+                            <a href="#tasks" class="w-full sm:w-auto px-8 py-3.5 rounded-xl font-semibold text-white bg-indigo-600 hover:bg-indigo-500 shadow-lg shadow-indigo-600/30 transition-all text-center">
+                                Outorganizar Tarefas <i class="fa-solid fa-arrow-right ml-2"></i>
+                            </a>
+                            <a href="#widgets" class="w-full sm:w-auto px-8 py-3.5 rounded-xl font-semibold border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all text-center">
+                                Explorar Utilitários
+                            </a>
+                        </div>
+
+                        <!-- Live Stats Counter -->
+                        <div class="grid grid-cols-3 gap-4 pt-8 border-t border-slate-200 dark:border-slate-800">
+                            <div>
+                                <p class="text-2xl sm:text-3xl font-extrabold text-indigo-600 dark:text-indigo-400" id="statTasks">0</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Tarefas Criadas</p>
+                            </div>
+                            <div>
+                                <p class="text-2xl sm:text-3xl font-extrabold text-purple-600 dark:text-purple-400" id="statDone">0%</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Taxa de Conclusão</p>
+                            </div>
+                            <div>
+                                <p class="text-2xl sm:text-3xl font-extrabold text-pink-600 dark:text-pink-400" id="statPomo">25m</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Bloco Pomodoro</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Hero Interactive Graphic -->
+                    <div class="lg:col-span-5 relative">
+                        <div class="relative mx-auto max-w-md lg:max-w-none">
+                            <div class="glass p-6 rounded-3xl border border-slate-200/50 dark:border-slate-700/50 shadow-2xl relative z-10 animate-float">
+                                <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-200 dark:border-slate-700">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                                        <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                                        <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                                    </div>
+                                    <span class="text-xs font-mono text-slate-400">DashFlow Live Console</span>
+                                </div>
+
+                                <!-- Mini Live Dynamic Graphic Content -->
+                                <div class="space-y-4">
+                                    <div class="p-4 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/50 flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <i class="fa-solid fa-circle-check text-indigo-600 dark:text-indigo-400 text-xl"></i>
+                                            <div>
+                                                <p class="font-semibold text-sm">Sprint Semanal</p>
+                                                <p class="text-xs text-slate-500 dark:text-slate-400">Meta de projetos concluída</p>
+                                            </div>
+                                        </div>
+                                        <span class="px-2.5 py-1 text-xs font-semibold bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 rounded-lg">100%</span>
+                                    </div>
+
+                                    <div class="p-4 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-100 dark:border-purple-900/50 flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <i class="fa-solid fa-clock text-purple-600 dark:text-purple-400 text-xl"></i>
+                                            <div>
+                                                <p class="font-semibold text-sm">Sessão Foco</p>
+                                                <p class="text-xs text-slate-500 dark:text-slate-400">Pomodoro Ativo</p>
+                                            </div>
+                                        </div>
+                                        <span class="px-2.5 py-1 text-xs font-semibold bg-purple-200 dark:bg-purple-900 text-purple-700 dark:text-purple-300 rounded-lg">25:00</span>
+                                    </div>
+
+                                    <div class="p-4 rounded-xl bg-pink-50 dark:bg-pink-950/40 border border-pink-100 dark:border-pink-900/50 flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <i class="fa-solid fa-sticky-note text-pink-600 dark:text-pink-400 text-xl"></i>
+                                            <div>
+                                                <p class="font-semibold text-sm">Bloco de Notas</p>
+                                                <p class="text-xs text-slate-500 dark:text-slate-400">Sincronizado via LocalStorage</p>
+                                            </div>
+                                        </div>
+                                        <i class="fa-solid fa-cloud-arrow-up text-pink-500"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Task Manager & Kanban Section -->
+        <section id="tasks" class="py-16 bg-slate-100/70 dark:bg-slate-800/40 border-y border-slate-200 dark:border-slate-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <!-- Section Header -->
+                <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+                    <div>
+                        <h2 class="text-3xl font-bold flex items-center gap-3">
+                            <i class="fa-solid fa-list-check text-indigo-600 dark:text-indigo-400"></i>
+                            Gerenciador de Tarefas
+                        </h2>
+                        <p class="text-slate-600 dark:text-slate-400 mt-1">Organize suas atividades em tempo real com suporte a armazenamento local.</p>
+                    </div>
+
+                    <!-- Progress Bar Header Indicator -->
+                    <div class="w-full md:w-64 bg-slate-200 dark:bg-slate-700 rounded-full h-4 overflow-hidden shadow-inner relative">
+                        <div id="taskProgressBar" class="bg-gradient-to-r from-indigo-500 to-emerald-500 h-full w-0 transition-all duration-500"></div>
+                    </div>
+                </div>
+
+                <!-- New Task Creation Form -->
+                <form id="taskForm" class="glass p-6 rounded-2xl border border-slate-200 dark:border-slate-700 mb-8 shadow-sm">
+                    <div class="grid grid-cols-1 sm:grid-cols-12 gap-4">
+                        <div class="sm:col-span-6">
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Título da Tarefa</label>
+                            <input type="text" id="taskInput" placeholder="Ex: Finalizar protótipo do site..." required class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 outline-none transition">
+                        </div>
+                        <div class="sm:col-span-3">
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Prioridade</label>
+                            <select id="taskPriority" class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 outline-none transition">
+                                <option value="Baixa">Baixa</option>
+                                <option value="Média" selected>Média</option>
+                                <option value="Alta">Alta</option>
+                            </select>
+                        </div>
+                        <div class="sm:col-span-3 flex items-end">
+                            <button type="submit" class="w-full py-3 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold shadow-md shadow-indigo-600/30 transition flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-plus"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Filters & Search Toolbar -->
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+                    <!-- Category Filter Buttons -->
+                    <div class="flex items-center gap-2 overflow-x-auto w-full sm:w-auto pb-2 sm:pb-0">
+                        <button class="task-filter-btn active px-4 py-2 rounded-xl text-sm font-semibold border border-indigo-600 bg-indigo-600 text-white transition" data-filter="all">Todas</button>
+                        <button class="task-filter-btn px-4 py-2 rounded-xl text-sm font-semibold border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition" data-filter="todo">A Fazer</button>
+                        <button class="task-filter-btn px-4 py-2 rounded-xl text-sm font-semibold border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition" data-filter="in_progress">Em Andamento</button>
+                        <button class="task-filter-btn px-4 py-2 rounded-xl text-sm font-semibold border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition" data-filter="done">Concluídas</button>
+                    </div>
+
+                    <!-- Clear Completed Tasks Button -->
+                    <button id="clearCompletedBtn" class="text-sm font-medium text-rose-500 hover:text-rose-600 dark:hover:text-rose-400 flex items-center gap-2 px-3 py-2">
+                        <i class="fa-solid fa-trash-can"></i> Limpar Concluídas
+                    </button>
+                </div>
+
+                <!-- Task Cards Display Grid -->
+                <div id="taskList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Task Items dynamically rendered here -->
+                </div>
+
+                <!-- Empty State Message -->
+                <div id="emptyTaskState" class="hidden text-center py-12">
+                    <i class="fa-regular fa-folder-open text-5xl text-slate-400 mb-3"></i>
+                    <p class="text-lg font-medium text-slate-500 dark:text-slate-400">Nenhuma tarefa encontrada neste filtro.</p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Widgets Section (Pomodoro, Calculator, Notepad) -->
+        <section id="widgets" class="py-16">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <div class="text-center max-w-2xl mx-auto mb-12">
+                    <h2 class="text-3xl font-bold flex items-center justify-center gap-3">
+                        <i class="fa-solid fa-cubes text-purple-600 dark:text-purple-400"></i>
+                        Widgets & Ferramentas Úteis
+                    </h2>
+                    <p class="text-slate-600 dark:text-slate-400 mt-2">Pequenas aplicações integradas para impulsionar o seu fluxo diário de trabalho.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    
+                    <!-- WIDGET 1: Pomodoro Timer -->
+                    <div class="glass p-6 rounded-3xl border border-slate-200/80 dark:border-slate-700/80 shadow-lg flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-6">
+                                <h3 class="font-bold text-lg flex items-center gap-2">
+                                    <i class="fa-solid fa-stopwatch text-indigo-500"></i> Cronômetro Pomodoro
+                                </h3>
+                                <span id="pomoModeBadge" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400">Foco</span>
+                            </div>
+
+                            <!-- Timer Display Ring -->
+                            <div class="relative w-44 h-44 mx-auto my-6 flex items-center justify-center">
+                                <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                                    <circle cx="50" cy="50" r="42" stroke="currentColor" stroke-width="8" class="text-slate-200 dark:text-slate-700" fill="transparent" />
+                                    <circle id="pomoCircleProgress" cx="50" cy="50" r="42" stroke="currentColor" stroke-width="8" class="text-indigo-600 dark:text-indigo-400 transition-all duration-1000 stroke-dasharray-264" stroke-dasharray="264" stroke-dashoffset="0" stroke-linecap="round" fill="transparent" />
+                                </svg>
+                                <span id="pomoTimeDisplay" class="absolute text-4xl font-extrabold tracking-tight font-mono">25:00</span>
+                            </div>
+                        </div>
+
+                        <!-- Pomodoro Controls -->
+                        <div class="space-y-3">
+                            <div class="grid grid-cols-3 gap-2">
+                                <button id="pomoStartBtn" class="py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl shadow-md transition">Iniciar</button>
+                                <button id="pomoPauseBtn" class="py-2.5 bg-amber-500 hover:bg-amber-400 text-white font-semibold rounded-xl shadow-md transition">Pausar</button>
+                                <button id="pomoResetBtn" class="py-2.5 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 font-semibold rounded-xl transition">Reset</button>
+                            </div>
+                            <div class="flex gap-2">
+                                <button id="pomoWorkModeBtn" class="flex-1 py-1.5 text-xs font-semibold rounded-lg bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">Foco (25m)</button>
+                                <button id="pomoBreakModeBtn" class="flex-1 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">Pausa (5m)</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- WIDGET 2: Quick Calculator -->
+                    <div class="glass p-6 rounded-3xl border border-slate-200/80 dark:border-slate-700/80 shadow-lg flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-bold text-lg flex items-center gap-2">
+                                    <i class="fa-solid fa-calculator text-purple-500"></i> Calculadora Rápida
+                                </h3>
+                                <button id="calcClear" class="text-xs font-semibold text-rose-500 hover:underline">Limpar</button>
+                            </div>
+
+                            <!-- Screen -->
+                            <div class="bg-slate-900 text-right p-4 rounded-2xl mb-4 shadow-inner">
+                                <div id="calcExpr" class="text-xs text-slate-400 h-4 overflow-hidden font-mono"></div>
+                                <div id="calcDisplay" class="text-2xl font-extrabold text-white font-mono truncate">0</div>
+                            </div>
+                        </div>
+
+                        <!-- Buttons Grid -->
+                        <div class="grid grid-cols-4 gap-2 text-sm font-semibold">
+                            <button class="calc-btn p-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition" data-val="(">(</button>
+                            <button class="calc-btn p-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition" data-val=")">)</button>
+                            <button class="calc-btn p-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition text-indigo-500" data-val="%">%</button>
+                            <button class="calc-btn p-3 rounded-xl bg-purple-600 text-white hover:bg-purple-500 transition" data-val="/">÷</button>
+
+                            <button class="calc-btn p-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition" data-val="7">7</button>
+                            <button class="calc-btn p-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition" data-val="8">8</button>
+                            <button class="calc-btn p-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition" data-val="9">9</button>
+                            <button class="calc-btn p-3 rounded-xl bg-purple-600 text-white hover:bg-purple-500 transition" data-val="*">×</button>
+
+                            <button class="calc-btn p-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition" data-val="4">4</button>
+                            <button class="calc-btn p-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition" data-val="5">5</button>
+                            <button class="calc-btn p-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition" data-val="6">6</button>
+                            <button class="calc-btn p-3 rounded-xl bg-purple-600 text-white hover:bg-purple-500 transition" data-val="-">-</button>
+
+                            <button class="calc-btn p-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition" data-val="1">1</button>
+                            <button class="calc-btn p-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition" data-val="2">2</button>
+                            <button class="calc-btn p-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition" data-val="3">3</button>
+                            <button class="calc-btn p-3 rounded-xl bg-purple-600 text-white hover:bg-purple-500 transition" data-val="+">+</button>
+
+                            <button class="calc-btn p-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition" data-val="0">0</button>
+                            <button class="calc-btn p-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition" data-val=".">.</button>
+                            <button id="calcEqual" class="col-span-2 p-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:opacity-90 transition font-bold">=</button>
+                        </div>
+                    </div>
+
+                    <!-- WIDGET 3: Quick Notepad -->
+                    <div class="glass p-6 rounded-3xl border border-slate-200/80 dark:border-slate-700/80 shadow-lg flex flex-col justify-between">
+                        <div class="flex flex-col h-full">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-bold text-lg flex items-center gap-2">
+                                    <i class="fa-solid fa-pen-to-square text-pink-500"></i> Bloco de Notas
+                                </h3>
+                                <span id="noteSaveStatus" class="text-xs text-emerald-500 font-medium hidden">Salvo</span>
+                            </div>
+
+                            <!-- Text Area -->
+                            <textarea id="noteArea" placeholder="Digite suas anotações aqui... Salvo automaticamente!" class="w-full flex-grow h-48 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-pink-500 outline-none resize-none text-sm transition"></textarea>
+                        </div>
+
+                        <!-- Notepad Toolbar -->
+                        <div class="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-700 mt-4">
+                            <span id="noteCharCount" class="text-xs text-slate-500 dark:text-slate-400">0 caracteres</span>
+                            <div class="flex gap-2">
+                                <button id="copyNoteBtn" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 transition flex items-center gap-1">
+                                    <i class="fa-regular fa-copy"></i> Copiar
+                                </button>
+                                <button id="clearNoteBtn" class="px-3 py-1.5 text-xs font-semibold rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition">
+                                    Limpar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Form Section -->
+        <section id="contact" class="py-16 bg-slate-100/70 dark:bg-slate-800/40 border-t border-slate-200 dark:border-slate-800">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold flex items-center justify-center gap-3">
+                        <i class="fa-solid fa-paper-plane text-indigo-600 dark:text-indigo-400"></i>
+                        Entre em Contato
+                    </h2>
+                    <p class="text-slate-600 dark:text-slate-400 mt-2">Dúvidas, sugestões ou suporte? Envie uma mensagem com validação instantânea.</p>
+                </div>
+
+                <!-- Contact Form Card -->
+                <form id="contactForm" class="glass p-8 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-xl space-y-6" novalidate>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <!-- Name Field -->
+                        <div>
+                            <label for="contactName" class="block text-sm font-semibold mb-2">Seu Nome</label>
+                            <div class="relative">
+                                <input type="text" id="contactName" placeholder="Ex: Maria Silva" required class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 outline-none transition">
+                                <span class="input-icon absolute right-3 top-3.5 text-slate-400"></span>
+                            </div>
+                            <p class="error-msg text-xs text-rose-500 mt-1.5 hidden">Por favor, insira pelo menos 3 caracteres.</p>
+                        </div>
+
+                        <!-- Email Field -->
+                        <div>
+                            <label for="contactEmail" class="block text-sm font-semibold mb-2">Seu E-mail</label>
+                            <div class="relative">
+                                <input type="email" id="contactEmail" placeholder="maria@exemplo.com" required class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 outline-none transition">
+                                <span class="input-icon absolute right-3 top-3.5 text-slate-400"></span>
+                            </div>
+                            <p class="error-msg text-xs text-rose-500 mt-1.5 hidden">Por favor, insira um e-mail válido.</p>
+                        </div>
+                    </div>
+
+                    <!-- Subject Field -->
+                    <div>
+                        <label for="contactSubject" class="block text-sm font-semibold mb-2">Assunto</label>
+                        <input type="text" id="contactSubject" placeholder="Ex: Dúvida sobre o Dashboard" required class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 outline-none transition">
+                        <p class="error-msg text-xs text-rose-500 mt-1.5 hidden">O assunto não pode estar em branco.</p>
+                    </div>
+
+                    <!-- Message Field -->
+                    <div>
+                        <label for="contactMessage" class="block text-sm font-semibold mb-2">Sua Mensagem</label>
+                        <textarea id="contactMessage" rows="4" placeholder="Escreva aqui os detalhes da sua mensagem..." required class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 outline-none transition resize-none"></textarea>
+                        <p class="error-msg text-xs text-rose-500 mt-1.5 hidden">A mensagem deve conter pelo menos 10 caracteres.</p>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" id="contactSubmitBtn" class="w-full py-4 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 hover:opacity-95 text-white font-bold text-base shadow-lg shadow-indigo-600/30 transition transform active:scale-98 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-paper-plane"></i> Enviar Mensagem
+                    </button>
+                </form>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center text-xs">
+                    <i class="fa-solid fa-bolt"></i>
+                </div>
+                <span class="font-bold text-sm">DashFlow &copy; 2026</span>
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Desenvolvido com HTML5, CSS3 (Tailwind) e JavaScript Moderno.</p>
+            <div class="flex gap-4 text-slate-400">
+                <a href="#" aria-label="Github" class="hover:text-indigo-500 transition"><i class="fa-brands fa-github text-lg"></i></a>
+                <a href="#" aria-label="LinkedIn" class="hover:text-indigo-500 transition"><i class="fa-brands fa-linkedin text-lg"></i></a>
+                <a href="#" aria-label="Twitter" class="hover:text-indigo-500 transition"><i class="fa-brands fa-x-twitter text-lg"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Global Toast Container -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <script>
+        // Application State & Theme Engine
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- 1. Theme Manager (Dark/Light Mode) ---
+            const themeToggleBtn = document.getElementById('themeToggleBtn');
+            const themeIcon = document.getElementById('themeIcon');
+
+            function initTheme() {
+                const savedTheme = localStorage.getItem('dash_theme');
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+                if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                    document.documentElement.classList.add('dark');
+                    themeIcon.className = 'fa-solid fa-sun text-amber-400 text-lg';
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    themeIcon.className = 'fa-solid fa-moon text-slate-600 text-lg';
+                }
+            }
+
+            themeToggleBtn.addEventListener('click', () => {
+                const isDark = document.documentElement.classList.toggle('dark');
+                localStorage.setItem('dash_theme', isDark ? 'dark' : 'light');
+                themeIcon.className = isDark ? 'fa-solid fa-sun text-amber-400 text-lg' : 'fa-solid fa-moon text-slate-600 text-lg';
+                showToast(isDark ? 'Modo Escuro ativado' : 'Modo Claro ativado', 'info');
+            });
+
+            initTheme();
+
+            // --- Mobile Navigation Menu Toggle ---
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileMenu = document.getElementById('mobileMenu');
+            
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            document.querySelectorAll('.mobile-nav-link').forEach(link => {
+                link.addEventListener('click', () => mobileMenu.classList.add('hidden'));
+            });
+
+            // --- 2. Task Manager Logic ---
+            let tasks = JSON.parse(localStorage.getItem('dash_tasks')) || [
+                { id: 1, title: 'Explorar os recursos do DashFlow', priority: 'Alta', status: 'done', date: new Date().toLocaleDateString('pt-BR') },
+                { id: 2, title: 'Testar o Cronômetro Pomodoro', priority: 'Média', status: 'in_progress', date: new Date().toLocaleDateString('pt-BR') },
+                { id: 3, title: 'Criar uma nova tarefa customizada', priority: 'Baixa', status: 'todo', date: new Date().toLocaleDateString('pt-BR') }
+            ];
+
+            let currentTaskFilter = 'all';
+
+            const taskForm = document.getElementById('taskForm');
+            const taskInput = document.getElementById('taskInput');
+            const taskPriority = document.getElementById('taskPriority');
+            const taskList = document.getElementById('taskList');
+            const emptyTaskState = document.getElementById('emptyTaskState');
+            const taskProgressBar = document.getElementById('taskProgressBar');
+            const clearCompletedBtn = document.getElementById('clearCompletedBtn');
+
+            function saveTasks() {
+                localStorage.setItem('dash_tasks', JSON.stringify(tasks));
+                updateTaskStats();
+            }
+
+            function updateTaskStats() {
+                const total = tasks.length;
+                const completed = tasks.filter(t => t.status === 'done').length;
+                const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+                taskProgressBar.style.width = `${percent}%`;
+
+                // Update Hero Stats
+                document.getElementById('statTasks').textContent = total;
+                document.getElementById('statDone').textContent = `${percent}%`;
+            }
+
+            function renderTasks() {
+                taskList.innerHTML = '';
+
+                const filtered = tasks.filter(task => {
+                    if (currentTaskFilter === 'all') return true;
+                    return task.status === currentTaskFilter;
+                });
+
+                if (filtered.length === 0) {
+                    emptyTaskState.classList.remove('hidden');
+                } else {
+                    emptyTaskState.classList.add('hidden');
+                }
+
+                filtered.forEach(task => {
+                    const card = document.createElement('div');
+                    card.className = `glass p-5 rounded-2xl border ${task.status === 'done' ? 'border-emerald-300 dark:border-emerald-800/50 opacity-75' : 'border-slate-200 dark:border-slate-700'} shadow-sm flex flex-col justify-between transition hover:shadow-md`;
+
+                    // Priority Color Badge
+                    let priorityBg = 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300';
+                    if (task.priority === 'Alta') priorityBg = 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300';
+                    if (task.priority === 'Média') priorityBg = 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300';
+
+                    card.innerHTML = `
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="px-2.5 py-1 text-xs font-semibold rounded-lg ${priorityBg}">${task.priority}</span>
+                                <span class="text-xs text-slate-400 font-mono">${task.date}</span>
+                            </div>
+                            <p class="font-semibold text-base mb-4 ${task.status === 'done' ? 'line-through text-slate-400' : ''}">${escapeHtml(task.title)}</p>
+                        </div>
+                        
+                        <div class="flex items-center justify-between pt-3 border-t border-slate-200/60 dark:border-slate-700/60">
+                            <!-- Status Selector Dropdown -->
+                            <select onchange="changeTaskStatus(${task.id}, this.value)" class="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 cursor-pointer outline-none">
+                                <option value="todo" ${task.status === 'todo' ? 'selected' : ''}>A Fazer</option>
+                                <option value="in_progress" ${task.status === 'in_progress' ? 'selected' : ''}>Em Andamento</option>
+                                <option value="done" ${task.status === 'done' ? 'selected' : ''}>Concluída</option>
+                            </select>
+
+                            <button onclick="deleteTask(${task.id})" class="text-slate-400 hover:text-rose-500 transition p-1" title="Excluir">
+                                <i class="fa-regular fa-trash-can"></i>
+                            </button>
+                        </div>
+                    `;
+                    taskList.appendChild(card);
+                });
+
+                updateTaskStats();
+            }
+
+            taskForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const title = taskInput.value.trim();
+                if (!title) return;
+
+                const newTask = {
+                    id: Date.now(),
+                    title: title,
+                    priority: taskPriority.value,
+                    status: 'todo',
+                    date: new Date().toLocaleDateString('pt-BR')
+                };
+
+                tasks.unshift(newTask);
+                saveTasks();
+                renderTasks();
+                taskInput.value = '';
+                showToast('Nova tarefa criada com sucesso!', 'success');
+            });
+
+            window.changeTaskStatus = function(id, newStatus) {
+                tasks = tasks.map(t => t.id === id ? { ...t, status: newStatus } : t);
+                saveTasks();
+                renderTasks();
+            };
+
+            window.deleteTask = function(id) {
+                tasks = tasks.filter(t => t.id !== id);
+                saveTasks();
+                renderTasks();
+                showToast('Tarefa removida', 'info');
+            };
+
+            clearCompletedBtn.addEventListener('click', () => {
+                const initialCount = tasks.length;
+                tasks = tasks.filter(t => t.status !== 'done');
+                if (tasks.length < initialCount) {
+                    saveTasks();
+                    renderTasks();
+                    showToast('Tarefas concluídas removidas!', 'success');
+                } else {
+                    showToast('Nenhuma tarefa concluída para remover.', 'info');
+                }
+            });
+
+            // Filter Tabs listener
+            document.querySelectorAll('.task-filter-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.task-filter-btn').forEach(b => {
+                        b.classList.remove('active', 'bg-indigo-600', 'text-white', 'border-indigo-600');
+                        b.classList.add('bg-white', 'dark:bg-slate-800', 'text-slate-700', 'dark:text-slate-300');
+                    });
+                    e.target.classList.add('active', 'bg-indigo-600', 'text-white', 'border-indigo-600');
+                    currentTaskFilter = e.target.getAttribute('data-filter');
+                    renderTasks();
+                });
+            });
+
+            renderTasks();
+
+            // --- 3. Pomodoro Timer Logic ---
+            let pomoTimeLeft = 25 * 60;
+            let pomoTotalTime = 25 * 60;
+            let pomoTimerId = null;
+            let pomoMode = 'work'; // 'work' or 'break'
+
+            const pomoDisplay = document.getElementById('pomoTimeDisplay');
+            const pomoModeBadge = document.getElementById('pomoModeBadge');
+            const pomoCircleProgress = document.getElementById('pomoCircleProgress');
+            const pomoStartBtn = document.getElementById('pomoStartBtn');
+            const pomoPauseBtn = document.getElementById('pomoPauseBtn');
+            const pomoResetBtn = document.getElementById('pomoResetBtn');
+            const pomoWorkModeBtn = document.getElementById('pomoWorkModeBtn');
+            const pomoBreakModeBtn = document.getElementById('pomoBreakModeBtn');
+
+            function updatePomoDisplay() {
+                const minutes = Math.floor(pomoTimeLeft / 60);
+                const seconds = pomoTimeLeft % 60;
+                pomoDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+                // SVG Stroke offset calculation
+                const totalDash = 264;
+                const offset = totalDash - (pomoTimeLeft / pomoTotalTime) * totalDash;
+                pomoCircleProgress.style.strokeDashoffset = offset;
+            }
+
+            function startPomo() {
+                if (pomoTimerId) return;
+                pomoTimerId = setInterval(() => {
+                    if (pomoTimeLeft > 0) {
+                        pomoTimeLeft--;
+                        updatePomoDisplay();
+                    } else {
+                        clearInterval(pomoTimerId);
+                        pomoTimerId = null;
+                        showToast(pomoMode === 'work' ? 'Sessão de foco finalizada! Hora do descanso.' : 'Pausa concluída! De volta ao trabalho.', 'success');
+                        playBeep();
+                    }
+                }, 1000);
+            }
+
+            function pausePomo() {
+                if (pomoTimerId) {
+                    clearInterval(pomoTimerId);
+                    pomoTimerId = null;
+                }
+            }
+
+            function resetPomo() {
+                pausePomo();
+                pomoTimeLeft = pomoTotalTime;
+                updatePomoDisplay();
+            }
+
+            function setPomoMode(mode) {
+                pomoMode = mode;
+                pausePomo();
+                if (mode === 'work') {
+                    pomoTotalTime = 25 * 60;
+                    pomoTimeLeft = pomoTotalTime;
+                    pomoModeBadge.textContent = 'Foco';
+                    pomoModeBadge.className = 'text-xs font-semibold px-2.5 py-1 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400';
+                    pomoWorkModeBtn.classList.add('bg-indigo-100', 'dark:bg-indigo-950', 'text-indigo-700', 'dark:text-indigo-300');
+                    pomoBreakModeBtn.classList.remove('bg-indigo-100', 'dark:bg-indigo-950', 'text-indigo-700', 'dark:text-indigo-300');
+                } else {
+                    pomoTotalTime = 5 * 60;
+                    pomoTimeLeft = pomoTotalTime;
+                    pomoModeBadge.textContent = 'Pausa';
+                    pomoModeBadge.className = 'text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400';
+                    pomoBreakModeBtn.classList.add('bg-indigo-100', 'dark:bg-indigo-950', 'text-indigo-700', 'dark:text-indigo-300');
+                    pomoWorkModeBtn.classList.remove('bg-indigo-100', 'dark:bg-indigo-950', 'text-indigo-700', 'dark:text-indigo-300');
+                }
+                updatePomoDisplay();
+            }
+
+            pomoStartBtn.addEventListener('click', startPomo);
+            pomoPauseBtn.addEventListener('click', pausePomo);
+            pomoResetBtn.addEventListener('click', resetPomo);
+            pomoWorkModeBtn.addEventListener('click', () => setPomoMode('work'));
+            pomoBreakModeBtn.addEventListener('click', () => setPomoMode('break'));
+
+            function playBeep() {
+                try {
+                    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    const osc = ctx.createOscillator();
+                    osc.type = 'sine';
+                    osc.frequency.value = 800;
+                    osc.connect(ctx.destination);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.5);
+                } catch(e) {}
+            }
+
+            updatePomoDisplay();
+
+            // --- 4. Calculator Logic ---
+            const calcDisplay = document.getElementById('calcDisplay');
+            const calcExpr = document.getElementById('calcExpr');
+            let currentCalcStr = '';
+
+            document.querySelectorAll('.calc-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const val = btn.getAttribute('data-val');
+                    currentCalcStr += val;
+                    calcDisplay.textContent = currentCalcStr;
+                });
+            });
+
+            document.getElementById('calcClear').addEventListener('click', () => {
+                currentCalcStr = '';
+                calcDisplay.textContent = '0';
+                calcExpr.textContent = '';
+            });
+
+            document.getElementById('calcEqual').addEventListener('click', () => {
+                if (!currentCalcStr) return;
+                try {
+                    calcExpr.textContent = currentCalcStr + ' =';
+                    // Safe evaluation of mathematical expression
+                    const cleanExpr = currentCalcStr.replace(/[^0-9+\-*/.()%]/g, '');
+                    const result = Function(`'use strict'; return (${cleanExpr})`)();
+                    calcDisplay.textContent = result;
+                    currentCalcStr = String(result);
+                } catch (err) {
+                    calcDisplay.textContent = 'Erro';
+                    currentCalcStr = '';
+                }
+            });
+
+            // --- 5. Quick Notepad Logic ---
+            const noteArea = document.getElementById('noteArea');
+            const noteCharCount = document.getElementById('noteCharCount');
+            const noteSaveStatus = document.getElementById('noteSaveStatus');
+            const copyNoteBtn = document.getElementById('copyNoteBtn');
+            const clearNoteBtn = document.getElementById('clearNoteBtn');
+
+            // Load saved note
+            noteArea.value = localStorage.getItem('dash_note_content') || '';
+            updateNoteStats();
+
+            noteArea.addEventListener('input', () => {
+                localStorage.setItem('dash_note_content', noteArea.value);
+                updateNoteStats();
+                
+                noteSaveStatus.classList.remove('hidden');
+                setTimeout(() => noteSaveStatus.classList.add('hidden'), 1500);
+            });
+
+            function updateNoteStats() {
+                noteCharCount.textContent = `${noteArea.value.length} caracteres`;
+            }
+
+            copyNoteBtn.addEventListener('click', () => {
+                if (!noteArea.value) return;
+                const tempTextarea = document.createElement('textarea');
+                tempTextarea.value = noteArea.value;
+                document.body.appendChild(tempTextarea);
+                tempTextarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempTextarea);
+                showToast('Anotação copiada para a área de transferência!', 'success');
+            });
+
+            clearNoteBtn.addEventListener('click', () => {
+                noteArea.value = '';
+                localStorage.removeItem('dash_note_content');
+                updateNoteStats();
+                showToast('Bloco de notas limpo', 'info');
+            });
+
+            // --- 6. Contact Form Real-time Validation & Feedback ---
+            const contactForm = document.getElementById('contactForm');
+            const nameInput = document.getElementById('contactName');
+            const emailInput = document.getElementById('contactEmail');
+            const subjectInput = document.getElementById('contactSubject');
+            const messageInput = document.getElementById('contactMessage');
+
+            function validateField(input, condition) {
+                const parent = input.closest('div');
+                const errorMsg = parent.parentElement.querySelector('.error-msg') || parent.querySelector('.error-msg');
+                const icon = parent.querySelector('.input-icon');
+
+                if (condition) {
+                    input.classList.remove('border-rose-500', 'focus:ring-rose-500');
+                    input.classList.add('border-emerald-500', 'focus:ring-emerald-500');
+                    if (errorMsg) errorMsg.classList.add('hidden');
+                    if (icon) icon.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-500"></i>';
+                    return true;
+                } else {
+                    input.classList.remove('border-emerald-500', 'focus:ring-emerald-500');
+                    input.classList.add('border-rose-500', 'focus:ring-rose-500');
+                    if (errorMsg) errorMsg.classList.remove('hidden');
+                    if (icon) icon.innerHTML = '<i class="fa-solid fa-circle-xmark text-rose-500"></i>';
+                    return false;
+                }
+            }
+
+            function validateEmail(email) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            }
+
+            nameInput.addEventListener('input', () => validateField(nameInput, nameInput.value.trim().length >= 3));
+            emailInput.addEventListener('input', () => validateField(emailInput, validateEmail(emailInput.value.trim())));
+            subjectInput.addEventListener('input', () => validateField(subjectInput, subjectInput.value.trim().length > 0));
+            messageInput.addEventListener('input', () => validateField(messageInput, messageInput.value.trim().length >= 10));
+
+            contactForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                const isNameValid = validateField(nameInput, nameInput.value.trim().length >= 3);
+                const isEmailValid = validateField(emailInput, validateEmail(emailInput.value.trim()));
+                const isSubjValid = validateField(subjectInput, subjectInput.value.trim().length > 0);
+                const isMsgValid = validateField(messageInput, messageInput.value.trim().length >= 10);
+
+                if (isNameValid && isEmailValid && isSubjValid && isMsgValid) {
+                    showToast('Mensagem enviada com sucesso! Entraremos em contato em breve.', 'success');
+                    contactForm.reset();
+                    // Clear green validation styles
+                    [nameInput, emailInput, subjectInput, messageInput].forEach(inp => {
+                        inp.classList.remove('border-emerald-500', 'focus:ring-emerald-500');
+                        const icon = inp.closest('div').querySelector('.input-icon');
+                        if (icon) icon.innerHTML = '';
+                    });
+                } else {
+                    showToast('Por favor, corrija os erros no formulário antes de enviar.', 'error');
+                }
+            });
+
+            // --- Toast Notification System Helper ---
+            function showToast(message, type = 'info') {
+                const toastContainer = document.getElementById('toastContainer');
+                const toast = document.createElement('div');
+
+                let bgColor = 'bg-slate-800 text-white';
+                let icon = '<i class="fa-solid fa-circle-info text-indigo-400"></i>';
+
+                if (type === 'success') {
+                    bgColor = 'bg-emerald-900 text-emerald-100 border border-emerald-700';
+                    icon = '<i class="fa-solid fa-circle-check text-emerald-400"></i>';
+                } else if (type === 'error') {
+                    bgColor = 'bg-rose-900 text-rose-100 border border-rose-700';
+                    icon = '<i class="fa-solid fa-triangle-exclamation text-rose-400"></i>';
+                }
+
+                toast.className = `pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl shadow-2xl text-sm font-medium transition-all duration-300 transform translate-y-5 opacity-0 ${bgColor}`;
+                toast.innerHTML = `${icon} <span>${escapeHtml(message)}</span>`;
+
+                toastContainer.appendChild(toast);
+
+                // Animate In
+                setTimeout(() => {
+                    toast.classList.remove('translate-y-5', 'opacity-0');
+                }, 10);
+
+                // Animate Out & Remove
+                setTimeout(() => {
+                    toast.classList.add('translate-y-5', 'opacity-0');
+                    setTimeout(() => toast.remove(), 300);
+                }, 3500);
+            }
+
+            function escapeHtml(str) {
+                return str.replace(/[&<>"']/g, function(m) {
+                    return {
+                        '&': '&amp;',
+                        '<': '&lt;',
+                        '>': '&gt;',
+                        '"': '&quot;',
+                        "'": '&#039;'
+                    }[m];
+                });
+            }
+        });
+    </script>
+</body>
+</html>
